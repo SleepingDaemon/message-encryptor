@@ -1,4 +1,4 @@
-using SleepingDaemon.EncryptorSystem;
+using SleepingDaemon.EncryptSystem;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -15,8 +15,6 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-
-
             var ray = camera.ScreenPointToRay(Input.mousePosition);
 
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
