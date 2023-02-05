@@ -5,20 +5,14 @@ namespace SleepingDaemon.EncryptSystem
     public class LanguagePrimer : MonoBehaviour
     {
         [SerializeField] private char letterUpper, letterLower;
-        private EncryptManager encryptor;
-
-        private void Awake()
-        {
-            encryptor = FindObjectOfType<EncryptManager>();
-        }
 
         public void AddLetters()
         {
-            encryptor.AddLetter(letterLower);
-            encryptor.AddLetter(letterUpper);
-            for (int i = 0; i < encryptor.messages.Count; i++)
+            EncryptManager.Instance.AddLetter(letterLower);
+            EncryptManager.Instance.AddLetter(letterUpper);
+            for (int i = 0; i < EncryptManager.Instance.messages.Count; i++)
             {
-                Message message = encryptor.messages[i];
+                Message message = EncryptManager.Instance.messages[i];
                 message.DecryptMessage();
             }
         }

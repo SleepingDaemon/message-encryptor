@@ -5,6 +5,9 @@ namespace SleepingDaemon.EncryptSystem
 {
     public class UIMessagerEncryptor : MonoBehaviour
     {
+        public TMP_Text NameText;
+        public TMP_Text DateText;
+        public TMP_Text TitleText;
         public TMP_Text MessageText;
         public EncryptManager messageEncryptor;
 

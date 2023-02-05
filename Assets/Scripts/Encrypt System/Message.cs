@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,6 +10,9 @@ namespace SleepingDaemon.EncryptSystem
     {
         public event Action<string> OnMessageDecrypt;
 
+        [SerializeField] private string author;
+        [SerializeField] private string date;
+        [SerializeField] private string title;
         [TextArea(2, 10)][SerializeField] string messageToEncrypt = null;   // the message to encrypt
         [TextArea(2, 10)][SerializeField] string encryptedMSG = null;       // the encrypted message
 
@@ -34,12 +38,6 @@ namespace SleepingDaemon.EncryptSystem
             {
                 encryptedMSG = value;
             }
-        }
-
-        public Message(string messageToEncrypt, string encryptedMSG)
-        {
-            this.messageToEncrypt = messageToEncrypt;
-            this.encryptedMSG = encryptedMSG;
         }
 
         private void Start()
@@ -83,13 +81,13 @@ namespace SleepingDaemon.EncryptSystem
                     {
                         if (EncryptManager.Instance.lettersFound.Contains(messageToEncrypt[i]))
                         {
-                            //newEncryptedMessage = encryptedMSG.Replace(encryptedMSG[i], messageToEncrypt[x]);
                             decryptedMessage[i] = messageToEncrypt[i];
-                            OnMessageDecrypt?.Invoke(decryptedMessage.ToString());
                         }
                     }
                 }
             }
+
+            OnMessageDecrypt?.Invoke(decryptedMessage.ToString());
 
             return decryptedMessage.ToString();
         }
