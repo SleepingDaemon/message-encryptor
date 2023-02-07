@@ -10,11 +10,11 @@ namespace SleepingDaemon.EncryptSystem
         {
             EncryptManager.Instance.AddLetter(letterLower);
             EncryptManager.Instance.AddLetter(letterUpper);
-            for (int i = 0; i < EncryptManager.Instance.messages.Count; i++)
-            {
-                Message message = EncryptManager.Instance.messages[i];
-                message.DecryptMessage();
-            }
+            //for (int i = 0; i < EncryptManager.Instance.messages.Count; i++)
+            //{
+            //    Message message = EncryptManager.Instance.messages[i];
+            //    message.DecryptMessage();
+            //}
         }
     }
 }

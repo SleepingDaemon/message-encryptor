@@ -8,13 +8,10 @@ namespace SleepingDaemon.EncryptSystem
 {
     public class Message : MonoBehaviour
     {
-        public event Action<string> OnMessageDecrypt;
+        public event Action<string> OnMessageAdded;
 
-        [SerializeField] private string author;
-        [SerializeField] private string date;
-        [SerializeField] private string title;
         [TextArea(2, 10)][SerializeField] string messageToEncrypt = null;   // the message to encrypt
-        [TextArea(2, 10)][SerializeField] string encryptedMSG = null;       // the encrypted message
+        [TextArea(2, 10)]public string encryptedMSG = null;       // the encrypted message
 
         // Public Properties
         public string MessageToEncrypt
@@ -40,6 +37,11 @@ namespace SleepingDaemon.EncryptSystem
             }
         }
 
+        private void UpdateDecryptedMessage()
+        {
+            encryptedMSG = DecryptMessage();
+        }
+
         private void Start()
         {
             if (messageToEncrypt != null)
@@ -49,7 +51,9 @@ namespace SleepingDaemon.EncryptSystem
             else
                 Debug.Log("No message input to encrypt. Add a message!");
 
-            Debug.Log(encryptedMSG);
+            //Debug.Log(encryptedMSG);
+
+            EncryptManager.Instance.OnLetterAdded += UpdateDecryptedMessage;
         }
 
         public string Encrypt(string message)
@@ -59,8 +63,11 @@ namespace SleepingDaemon.EncryptSystem
             for (int i = 0; i < encryptMSG.Length; i++)
             {
                 // if the letter contains: ' ', !, ., then do not encrypt.
-                if (!encryptMSG[i].Equals(' ') && !encryptMSG[i].Equals(',') && !encryptMSG[i].Equals('.')
-                    && !encryptMSG[i].Equals('!'))
+                if (!encryptMSG[i].Equals(' ') && 
+                    !encryptMSG[i].Equals(',') && 
+                    !encryptMSG[i].Equals('.') && 
+                    !encryptMSG[i].Equals('!') &&
+                    !encryptMSG[i].Equals(':'))
                 {
                     encryptMSG[i] = (char)(encryptMSG[i] + Random.Range(3, 4) % 26);
                 }
@@ -87,9 +94,14 @@ namespace SleepingDaemon.EncryptSystem
                 }
             }
 
-            OnMessageDecrypt?.Invoke(decryptedMessage.ToString());
-
             return decryptedMessage.ToString();
+        }
+
+        public void InitMessage()
+        {
+            encryptedMSG = DecryptMessage();
+            OnMessageAdded?.Invoke(encryptedMSG);
+            EncryptManager.Instance.AddMessage(this);
         }
     }
 }

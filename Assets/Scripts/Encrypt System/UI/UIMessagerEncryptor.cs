@@ -1,29 +1,59 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace SleepingDaemon.EncryptSystem
 {
     public class UIMessagerEncryptor : MonoBehaviour
     {
-        public TMP_Text NameText;
-        public TMP_Text DateText;
-        public TMP_Text TitleText;
         public TMP_Text MessageText;
-        public EncryptManager messageEncryptor;
+        public GameObject messageUIObject;
 
-        private void OnEnable()
+        public EncryptManager EncryptManager;
+
+        private void Awake()
         {
-            //messageEncryptor.OnMessageDecrypt += HandleMessageDecryption;
+            EncryptManager = FindObjectOfType<EncryptManager>();
+        }
+
+        public void ViewMessage(string message)
+        {
+            Debug.Log("Viewing Message");
+            MessageText.text = message;
+            OpenPanel();
+        }
+
+        private void Start()
+        {
+            if (EncryptManager != null)
+            {
+                Debug.Log("EncryptManage is not null");
+
+                foreach (var msg in EncryptManager.messages)
+                {
+                    msg.OnMessageAdded += ViewMessage;
+                }
+            }
+
+            ClosePanel();
         }
 
         private void OnDisable()
         {
-            //messageEncryptor.OnMessageDecrypt -= HandleMessageDecryption;
+
         }
 
-        private void HandleMessageDecryption(string message)
+        private void OpenPanel()
         {
-            MessageText.text = message;
+            messageUIObject.SetActive(true);
+        }
+
+        private void ClosePanel()
+        {
+            messageUIObject.SetActive(false);
         }
     }
 }

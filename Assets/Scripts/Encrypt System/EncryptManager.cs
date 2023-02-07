@@ -6,15 +6,19 @@ namespace SleepingDaemon.EncryptSystem
 {
     public class EncryptManager : MonoBehaviour
     {
+        public event Action OnLetterAdded;
+
         public static EncryptManager Instance { get; private set; }
         public List<char> lettersFound = new List<char>();
         public List<Message> messages = new List<Message>();
+
+        private UIMessagerEncryptor viewMessage;
 
         private void OnEnable()
         {
             foreach (var message in messages)
             {
-                message.OnMessageDecrypt += HandleMessageOutput;
+                message.OnMessageAdded += HandleView;
             }
         }
 
@@ -22,13 +26,17 @@ namespace SleepingDaemon.EncryptSystem
         {
             foreach(var message in messages)
             {
-                message.OnMessageDecrypt -= HandleMessageOutput;
+                message.OnMessageAdded -= HandleView;
             }
         }
 
-        private void HandleMessageOutput(string message)
+        private void HandleView(string message)
         {
-            Debug.Log(message);
+            foreach (var msg in messages)
+            {
+                viewMessage.ViewMessage(message);
+            }
+            
         }
 
         private void Awake()
@@ -37,6 +45,8 @@ namespace SleepingDaemon.EncryptSystem
                 Destroy(this);
             else
                 Instance = this;
+
+            viewMessage = FindObjectOfType<UIMessagerEncryptor>();
         }
 
         public void AddLetter(char letter)
@@ -44,6 +54,12 @@ namespace SleepingDaemon.EncryptSystem
             if (lettersFound.Contains(letter)) return;
 
             lettersFound.Add(letter);
+            OnLetterAdded?.Invoke();
+        }
+
+        public void AddMessage(Message message)
+        {
+            messages.Add(message);
         }
     }
 }
