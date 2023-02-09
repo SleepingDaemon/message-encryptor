@@ -8,8 +8,6 @@ namespace SleepingDaemon.EncryptSystem
 {
     public class Message : MonoBehaviour
     {
-        public event Action<string> OnMessageAdded;
-
         [SerializeField] private string author;
         [SerializeField] private int date;
         [SerializeField] private string title;
@@ -32,12 +30,11 @@ namespace SleepingDaemon.EncryptSystem
             }
         }
 
-        public string GetMessage() => message;
+        public string SetMessage() => message;
 
 
         public void InitMessage()
         {
-            OnMessageAdded?.Invoke(message);
             EncryptManager.Instance.AddMessage(this);
         }
 

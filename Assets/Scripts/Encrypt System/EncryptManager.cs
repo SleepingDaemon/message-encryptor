@@ -7,37 +7,13 @@ namespace SleepingDaemon.EncryptSystem
     public class EncryptManager : MonoBehaviour
     {
         public event Action OnLetterAdded;
+        public event Action OnMessageAdded;
 
         public static EncryptManager Instance { get; private set; }
         public List<char> lettersFound = new List<char>();
         public List<Message> messages = new List<Message>();
 
         private UIMessagerEncryptor viewMessage;
-
-        private void OnEnable()
-        {
-            foreach (var message in messages)
-            {
-                message.OnMessageAdded += HandleView;
-            }
-        }
-
-        private void OnDisable()
-        {
-            foreach(var message in messages)
-            {
-                message.OnMessageAdded -= HandleView;
-            }
-        }
-
-        private void HandleView(string message)
-        {
-            foreach (var msg in messages)
-            {
-                viewMessage.ViewMessage(message);
-            }
-            
-        }
 
         private void Awake()
         {
@@ -60,6 +36,7 @@ namespace SleepingDaemon.EncryptSystem
         public void AddMessage(Message message)
         {
             messages.Add(message);
+            OnMessageAdded?.Invoke();
         }
     }
 }

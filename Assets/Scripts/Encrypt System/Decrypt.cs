@@ -7,8 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(Encrypt))]
 public class Decrypt : MonoBehaviour
 {
-    [SerializeField] private string decryptedMSG;
-    private string originalMSG;
+    [SerializeField] private string[] decryptedValues;
+    private string[] originalValues;
     private Encrypt _encrypt;
 
     private void Awake()
@@ -19,36 +19,46 @@ public class Decrypt : MonoBehaviour
     private void Start()
     {
         if(_encrypt != null)
-            originalMSG = _encrypt.GetOriginalMessage();
-
-        EncryptManager.Instance.OnLetterAdded += UpdateDecryptedMessage;
+        {
+            originalValues = _encrypt.SetOrignalValues();
+            EncryptManager.Instance.OnLetterAdded += UpdateDecryptedMessage;
+        }
+        else
+        {
+            Debug.Log("No Encrypt Component found!");
+        }
     }
 
     private void UpdateDecryptedMessage()
     {
-        decryptedMSG = DecryptMessage();
+        string[] encryptedValues = _encrypt.SetEncryptedValues();
+        decryptedValues= new string[encryptedValues.Length];
+
+        for (int i = 0; i < encryptedValues.Length; i++)
+        {
+            decryptedValues[i] = DecryptMessage(encryptedValues[i]);
+        }
     }
 
-    public string DecryptMessage()
+    public string DecryptMessage(string encryptedValue)
     {
-        string encryptedMSG = _encrypt.GetEncryptedMessage();
+        char[] decryptedString = encryptedValue.ToCharArray();
 
-        StringBuilder decryptedMessage = new StringBuilder(encryptedMSG);
-
-        for (int i = 0; i < encryptedMSG.Length; i++)
+        for (int i = 0; i < decryptedString.Length; i++)
         {
-            for (int x = 0; x < originalMSG.Length; x++)
+            if (!decryptedString[i].Equals(' ') &&
+                !decryptedString[i].Equals(',') &&
+                !decryptedString[i].Equals('.') &&
+                !decryptedString[i].Equals('!') &&
+                !decryptedString[i].Equals(':'))
             {
-                if (encryptedMSG[i] != originalMSG[x])
+                if (EncryptManager.Instance.lettersFound.Contains((char)(decryptedString[i] - 3)))
                 {
-                    if (EncryptManager.Instance.lettersFound.Contains(originalMSG[i]))
-                    {
-                        decryptedMessage[i] = originalMSG[i];
-                    }
+                    decryptedString[i] = (char)(decryptedString[i] - 3);
                 }
             }
         }
 
-        return decryptedMessage.ToString();
+        return new string(decryptedString);
     }
 }

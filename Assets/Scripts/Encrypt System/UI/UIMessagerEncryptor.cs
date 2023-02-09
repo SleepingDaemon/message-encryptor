@@ -19,10 +19,10 @@ namespace SleepingDaemon.EncryptSystem
             EncryptManager = FindObjectOfType<EncryptManager>();
         }
 
-        public void ViewMessage(string message)
+        public void ViewMessage()
         {
             Debug.Log("Viewing Message");
-            MessageText.text = message;
+            //MessageText.text = message;
             OpenPanel();
         }
 
@@ -30,12 +30,7 @@ namespace SleepingDaemon.EncryptSystem
         {
             if (EncryptManager != null)
             {
-                Debug.Log("EncryptManage is not null");
-
-                foreach (var msg in EncryptManager.messages)
-                {
-                    msg.OnMessageAdded += ViewMessage;
-                }
+                
             }
 
             ClosePanel();

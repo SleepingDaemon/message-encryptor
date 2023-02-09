@@ -1,16 +1,19 @@
 using SleepingDaemon.EncryptSystem;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Message))]
 public class Encrypt : MonoBehaviour
 {
-    [TextArea(2, 10)] [SerializeField] string encryptedMSG = null;       // the encrypted message
-    private string originalMSG;
-    private Message message;
+    [SerializeField] private string[] encryptedValues;
+    [TextArea(1, 10)][SerializeField] private string[] originalValues = new string[3];
+    [SerializeField] private List<char> charsToIgnore = new List<char>();
 
-    public string EncryptedMessage => encryptedMSG;
+    private string originalMSG, originalAUTH, originalTITLE;
+    private Message message;
 
     private void Awake()
     {
@@ -20,36 +23,50 @@ public class Encrypt : MonoBehaviour
     private void Start()
     {
         if(message != null && message.CanEncrypt())
-            encryptedMSG = EncryptMessage();
+        {
+            originalAUTH = message.Author;
+            originalTITLE = message.Title;
+            originalMSG = message.OriginalMessage;
+
+            originalValues[0] = originalAUTH;
+            originalValues[1] = originalTITLE;
+            originalValues[2] = originalMSG;
+
+            if (originalValues.Length > 0)
+            {
+                encryptedValues = new string[originalValues.Length];
+                for (int i = 0; i < originalValues.Length; i++)
+                {
+                    encryptedValues[i] = EncryptMessage(originalValues[i]);
+                }
+            }
+        }
         else
             Debug.Log("No message input to encrypt. Add a message!");
     }
 
-    public string EncryptMessage()
+    public string EncryptMessage(string value)
     {
-        // Get message string from Message component
-        originalMSG = message.GetMessage();
-        string tempMSG = originalMSG;
+        string tempString = value;
 
         // Encrypt the message by character
-        char[] encryptMSG = tempMSG.ToCharArray();
-        for (int i = 0; i < encryptMSG.Length; i++)
+        char[] encryptString = tempString.ToCharArray();
+        for (int i = 0; i < encryptString.Length; i++)
         {
             // if the letter contains: ' ', !, ., then do not encrypt.
-            if (!encryptMSG[i].Equals(' ') &&
-                !encryptMSG[i].Equals(',') &&
-                !encryptMSG[i].Equals('.') &&
-                !encryptMSG[i].Equals('!') &&
-                !encryptMSG[i].Equals(':'))
+            if (!encryptString[i].Equals(' ') &&
+                !encryptString[i].Equals(',') &&
+                !encryptString[i].Equals('.') &&
+                !encryptString[i].Equals('!') &&
+                !encryptString[i].Equals(':'))
             {
-                encryptMSG[i] = (char)(encryptMSG[i] + Random.Range(3, 4) % 26);
+                encryptString[i] = (char)(encryptString[i] + 3 % 26);
             }
         }
 
-        return new string(encryptMSG);
+        return new string(encryptString);
     }
 
-    public string GetEncryptedMessage() => encryptedMSG;
-
-    public string GetOriginalMessage() => originalMSG;
+    public string[] SetEncryptedValues() => encryptedValues;
+    public string[] SetOrignalValues() => originalValues;
 }
